@@ -118,11 +118,12 @@ def attenuate_jwt(token, new_permission):
 #an alternative is to return the 
 def validate_token_aux(attenuated_jwt):
 
-    #read inherited_payload if it's defined 
     decoded_payload = jwt.decode(attenuated_jwt, options={"verify_signature": False})
     
     if "inherited_payload" in decoded_payload:
         print("it's an attenuated token, key needs to be derived")
+        
+        #dummy signature is appended so it can be interpreted as a JWT, and decoded without signature validation.
         key = validate_token_aux(decoded_payload["inherited_payload"] + DUMMY_SIGNATURE)
         
         try:     
@@ -130,11 +131,11 @@ def validate_token_aux(attenuated_jwt):
             return derive_key(attenuated_jwt)
         except:
             print("invalid token") 
-            return "" #TO DO: need to deal with this case. not sure if None would be better
+            return "" #TO DO: not sure if None would be better
 
     
     #base case
-    print("it's a regular token, perform regular validation")
+    print("base case: derive first key")
     #TO DO each token must validate permissions with it's parent
 
     base_token = jwt.encode(
@@ -153,9 +154,9 @@ def get_payload(attenuated_jwt):
         jwt_hash = validate_token_aux(attenuated_jwt)
         if jwt_hash == derive_key(attenuated_jwt):
             decoded_payload = jwt.decode(attenuated_jwt, options={"verify_signature": False})
-            return decoded_payload
+            return decoded_payload #maybe inherited_payload should be removed.
         else:
-            return None
+            return None #maybe raise an exception?
 
 
 attenuated_jwt = attenuate_jwt(token, new_permission)
