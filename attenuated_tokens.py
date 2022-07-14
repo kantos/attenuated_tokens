@@ -11,6 +11,15 @@ def new_permission_valid(decoded_payload_data, new_permission):
 def derive_key(value):
     return hashlib.sha256(value.encode()).hexdigest()
 
+# "sub" is used to retrieve the key for it, so when decoding it knows what key to use.
+# "sub" is only stored in the original token to save space.
+def get_sub_from_toke(token):
+    return 0 #TO DO
+
+#typical function to retrieve a key given a "sub"
+def get_key_from_sub(token):
+    return 0 #TO DO
+
 #TO DO: don't store header, just use parent algorithm. When decoding the most attenuated token contains the algorithm everyone else used.
 #This limits using different algorithms, which is really not necessary, and shrinks attenuated tokens considerably.
 def attenuate_jwt(parent_token, new_permission):
